@@ -2,8 +2,8 @@
 <head>
     <meta charset='UTF-8'>
     <meta name="robots" content="noindex">
-    <title>The Experiment Factory columbia-card-task-cold</title>
-    
+    <title>Tarea de Cartas: columbia-card-task-cold</title>
+
 <link rel='stylesheet' type='text/css' href='jspsych.css'>
 <link rel='stylesheet' type='text/css' href='default_style.css'>
 <link rel='stylesheet' type='text/css' href='style.css'>
@@ -25,6 +25,43 @@
 <script src='experiment.js'></script>
 
 <script>
+// Dirección de tu Worker de Cloudflare
+var PROXY_URL = 'https://cctc-redcap.careco-a43.workers.dev';
+
+// ID del participante: viene de REDCap en la dirección (?id=...)
+var recordId = new URLSearchParams(window.location.search).get('id');
+
+// Arma el resumen de las rondas de la tarea (sin las de práctica)
+function armarResultados() {
+    var todos = JSON.parse(jsPsych.data.dataAsJSON());
+    var rondas = [];
+    var total = 0;
+    var sumaCartas = 0;
+    for (var i = 0; i < todos.length; i++) {
+        var t = todos[i];
+        if (t.exp_stage == 'test' && t.num_cards_chosen !== undefined) {
+            var pts = Array.isArray(t.round_points) ? t.round_points[0] : t.round_points;
+            rondas.push({
+                ronda: t.whichRound,
+                cartas: t.num_cards_chosen,
+                cartas_perdida: t.num_loss_cards,
+                ganancia: t.gain_amount,
+                perdida: t.loss_amount,
+                puntos: pts,
+                rt: t.rt
+            });
+            total += pts;
+            sumaCartas += t.num_cards_chosen;
+        }
+    }
+    var media = rondas.length ? (sumaCartas / rondas.length).toFixed(2) : 0;
+    return { rondas: rondas, total: total, media: media };
+}
+
+function mensaje(texto) {
+    document.body.innerHTML = '<div style="font-family:sans-serif;font-size:20px;text-align:center;margin-top:20%">' + texto + '</div>';
+}
+
 $( document ).ready(function() {
 
     jsPsych.init({
@@ -36,35 +73,40 @@ $( document ).ready(function() {
              },
 
              on_finish: function(data){
+                 var r = armarResultados();
+                 mensaje('Guardando tus respuestas, por favor esperá...');
 
-                 // Serialize the data
-                 var promise = new Promise(function(resolve, reject) {
-                     var data = jsPsych.data.dataAsJSON();
-                     resolve(data);
+                 // Sin ID (por ejemplo, al probar la tarea sola): se descarga un CSV
+                 if (!recordId) {
+                     jsPsych.data.localSave('cctc_resultados.csv', 'csv');
+                     mensaje('Fin de la tarea (modo prueba: no se envió nada a REDCap).');
+                     return;
+                 }
+
+                 fetch(PROXY_URL, {
+                     method: 'POST',
+                     body: JSON.stringify({
+                         id: recordId,
+                         trials: r.rondas,
+                         total: r.total,
+                         mediaCartas: r.media
+                     })
                  })
-
-                 promise.then(function(data) {
-
-
-                     $.ajax({
-                         type: "POST",
-                         url: '/save',
-                         data: { "data": data },
-                         success: function(){ document.location = "/next" },
-                         dataType: "application/json",
-
-                         // Endpoint not running, local save
-                         error: function(err) {
-
-                             if (err.status == 200){
-                                 document.location = "/next";
-                             } else {
-                                 // If error, assue local save
-                                 jsPsych.data.localSave('columbia-card-task-cold_results.csv', 'csv');
-                             }
-                         }
-                     });
+                 .then(function(resp) { return resp.text(); })
+                 .then(function(txt) {
+                     if (txt.indexOf('"count"') !== -1) {
+                         mensaje('Listo, tus respuestas se guardaron. Ya podés cerrar esta ventana. ¡Gracias!');
+                     } else {
+                         console.log('Respuesta de REDCap:', txt);
+                         jsPsych.data.localSave('cctc_resultados.csv', 'csv');
+                         mensaje('Hubo un problema al guardar. Avisale a quien te dio la tarea.');
+                     }
                  })
+                 .catch(function(err) {
+                     console.log(err);
+                     jsPsych.data.localSave('cctc_resultados.csv', 'csv');
+                     mensaje('Hubo un problema al guardar. Avisale a quien te dio la tarea.');
+                 });
              }
 
       });
