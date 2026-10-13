@@ -1,4 +1,25 @@
 /* ************************************ */
+/* Traduccion de botones de los plugins */
+/* ************************************ */
+// Algunos botones vienen escritos en ingles dentro de los plugins de jsPsych
+// (Next, Previous, End Instructions, Submit Answers). Este bloque los traduce
+// apenas aparecen en pantalla, asi no hace falta modificar los plugins.
+var traduccionBotones = {
+	'Next': 'Siguiente',
+	'Previous': 'Anterior',
+	'End Instructions': 'Finalizar instrucciones',
+	'Submit Answers': 'Enviar respuestas'
+}
+new MutationObserver(function() {
+	$('button').each(function() {
+		var t = $.trim($(this).text())
+		if (traduccionBotones.hasOwnProperty(t)) {
+			$(this).text(traduccionBotones[t])
+		}
+	})
+}).observe(document.body, {childList: true, subtree: true})
+
+/* ************************************ */
 /* Define helper functions */
 /* ************************************ */
 var getInstructFeedback = function() {
@@ -25,7 +46,7 @@ function assessPerformance() {
 	var avg_rt = -1
 	if (rt_array.length !== 0) {
 		avg_rt = math.median(rt_array)
-	} 
+	}
 	var missed_percent = missed_count/experiment_data.length
   	credit_var = (missed_percent < 0.4 && avg_rt > 200)
 	jsPsych.data.addDataToLastTrial({"credit_var": credit_var,
@@ -61,7 +82,7 @@ var getBoard = function(board_type) {
 		board += "<div class = square><input type='image' class = card_image id = c" + i +
 			" src='images/beforeChosen.png'></div>"
 		}
-		
+
 	} else {
 		board = "<div class = cardbox2>"
 		for (i = 1; i < 33; i++) {
@@ -74,9 +95,9 @@ var getBoard = function(board_type) {
 }
 
 var getText = function() {
-	return '<div class = centerbox><p class = block-text>Overall, you earned ' + totalPoints + ' points. These are the points used for your bonus from three randomly picked trials:  ' +
+	return '<div class = centerbox><p class = block-text>En total, obtuviste ' + totalPoints + ' puntos. Estos son los puntos que se usan para tu bonificación, a partir de tres rondas elegidas al azar:  ' +
 		'<ul list-text><li>' + prize1 + '</li><li>' + prize2 + '</li><li>' + prize3 + '</li></ul>' +
-		'</p><p class = block-text>Press <strong>enter</strong> to continue.</p></div>'
+		'</p><p class = block-text>Presioná <strong>Enter</strong> para continuar.</p></div>'
 }
 
 var turnOneCard = function(whichCard, win) {
@@ -92,7 +113,7 @@ var turnOneCard = function(whichCard, win) {
 function doSetTimeout(card_i, delay, points, win) {
 	CCT_timeouts.push(setTimeout(function() {
 		turnOneCard(card_i, win);
-		document.getElementById("current_round").innerHTML = 'Current Round Points: ' + points
+		document.getElementById("current_round").innerHTML = 'Puntos de la ronda actual: ' + points
 	}, delay));
 }
 
@@ -129,7 +150,7 @@ var instructFunction = function() {
 	}
 	CCT_timeouts.push(setTimeout(function() {
 		document.getElementById("instruct1").innerHTML =
-		'<strong>Example 1: </strong>In the example below, you see 32 unknown cards. The display shows you that 1 of these cards is a loss card. It also tells you that turning over each gain card is worth 10 points to you, and that turning over the loss card will cost you 750 points. Let us suppose you decided to turn over 7 cards and then decided to stop. Please click the "See Result" button to see what happens: <font color = "red">Luckily, none of the seven cards you turned over happened to be the loss card, so your score for this round was 70. Please click the next button.</font>'
+		'<strong>Ejemplo 1: </strong>En el ejemplo de abajo ves 32 cartas desconocidas. El panel te indica que 1 de esas cartas es una carta de pérdida. También te indica que dar vuelta cada carta de ganancia vale 10 puntos para vos, y que dar vuelta la carta de pérdida te costará 750 puntos. Supongamos que decidiste dar vuelta 7 cartas y después decidiste parar. Hacé clic en el botón "Ver resultado" para ver qué pasa: <font color = "red">Por suerte, ninguna de las siete cartas que diste vuelta resultó ser la carta de pérdida, así que tu puntaje en esta ronda fue 70. Hacé clic en el botón "Siguiente".</font>'
 		}, delay))
 }
 
@@ -176,7 +197,7 @@ var instructFunction2 = function() {
 	doSetTimeout(13, delay, total_points, 'loss')
 	CCT_timeouts.push(setTimeout(function() {
 		document.getElementById("instruct2").innerHTML =
-			'<strong>Example 2: </strong>In the example below, you see 32 unknown cards. The display shows you that 3 of these cards are loss cards. It also tells you that turning over each gain card is worth 30 points to you, and that turning over the loss card will cost you 250 points. Let us suppose you decided to turn over 10 cards and then decided to stop. Please click the "See Result" button to see what happens: <font color = "red">This time, the fourth card you turned over was a loss card. As you saw, the round will immediately end when you turn over the loss card. You had earned 90 points for the 3 gain cards, and then 250 points were subtracted for the loss card, so your score for this round was -160. After the loss points were subtracted from your Round Total, the computer also showed you the cards that you had not yet turned over. Please click the next button.</font>'
+			'<strong>Ejemplo 2: </strong>En el ejemplo de abajo ves 32 cartas desconocidas. El panel te indica que 3 de esas cartas son cartas de pérdida. También te indica que dar vuelta cada carta de ganancia vale 30 puntos para vos, y que dar vuelta la carta de pérdida te costará 250 puntos. Supongamos que decidiste dar vuelta 10 cartas y después decidiste parar. Hacé clic en el botón "Ver resultado" para ver qué pasa: <font color = "red">Esta vez, la cuarta carta que diste vuelta fue una carta de pérdida. Como viste, la ronda termina inmediatamente cuando das vuelta una carta de pérdida. Habías ganado 90 puntos por las 3 cartas de ganancia y después se restaron 250 puntos por la carta de pérdida, así que tu puntaje en esta ronda fue -160. Una vez restados los puntos de pérdida del total de la ronda, la computadora también te mostró las cartas que todavía no habías dado vuelta. Hacé clic en el botón "Siguiente".</font>'
 	}, delay))
 	CCT_timeouts.push(setTimeout(instructTurnCards, delay + 1000))
 }
@@ -219,8 +240,8 @@ var chooseButton = function(clicked_id) {
 	roundPointsArray.push(roundPoints)
 	if ($('#feedback').length) {
 		document.getElementById("feedback").innerHTML =
-			'<strong>You chose ' + clicked_id +
-			' card(s)</strong>. When you click on the "Next" button, the next round starts. Please note that the loss amount, the gain amount, and the number of loss cards might have changed.'
+			'<strong>Elegiste ' + clicked_id +
+			' carta(s)</strong>. Cuando hagas clic en el botón "Siguiente ronda", empieza la próxima ronda. Tené en cuenta que el monto de pérdida, el monto de ganancia y la cantidad de cartas de pérdida pueden haber cambiado.'
 	}
 }
 
@@ -256,10 +277,11 @@ var getRound = function() {
 		whichLossCards.push(shuffledCardArray.pop())
 	}
 	gameState = gameSetup
-	gameState = appendTextAfter(gameState, 'Game Round: ', whichRound)
-	gameState = appendTextAfter(gameState, 'Loss Amount: ', lossAmt)
-	gameState = appendTextAfter(gameState, 'Number of Loss Cards: ', numLossCards)
-	gameState = appendTextAfter(gameState, 'Gain Amount: ', gainAmt)
+	// OJO: los textos de busqueda de abajo tienen que coincidir exactamente con las etiquetas de gameSetup
+	gameState = appendTextAfter(gameState, 'Ronda: ', whichRound)
+	gameState = appendTextAfter(gameState, 'Monto de pérdida: ', lossAmt)
+	gameState = appendTextAfter(gameState, 'Cantidad de cartas de pérdida: ', numLossCards)
+	gameState = appendTextAfter(gameState, 'Monto de ganancia: ', gainAmt)
 	return gameState
 }
 
@@ -293,26 +315,26 @@ var prize2 = 0
 var prize3 = 0
 
 var practiceSetup1 =
-	"<div class = practiceText><div class = block-text2 id = instruct1><strong>Practice 1: </strong> As mentioned, in the version of the card game you are about to play, you will not turn the cards over one by one.  Rather, you will simply choose the total number of cards you would like to turn over (from 0 to 32) and then continue to the next round.  If turning over any cards seems too risky to you can click the zero button, in which case your score for this round will automatically be zero.  This is a practice round, and it looks just like the game you will play.  Please select the number of cards you would like to turn over, given the number of loss cards and the amount that you can gain or lose if you turn over a gain or loss card, as shown below.  Please note: The computer will tell you how well you did after all " + numRounds + " game rounds are over!</div></div>" +
+	"<div class = practiceText><div class = block-text2 id = instruct1><strong>Práctica 1: </strong> Como se mencionó, en la versión del juego de cartas que vas a jugar no vas a dar vuelta las cartas de a una. En cambio, simplemente vas a elegir la cantidad total de cartas que querés dar vuelta (de 0 a 32) y después pasar a la siguiente ronda. Si dar vuelta cualquier carta te parece demasiado riesgoso, podés hacer clic en el botón cero; en ese caso, tu puntaje en esta ronda será automáticamente cero. Esta es una ronda de práctica y es igual al juego que vas a jugar. Elegí la cantidad de cartas que querés dar vuelta, según la cantidad de cartas de pérdida y los montos que podés ganar o perder al dar vuelta una carta de ganancia o de pérdida, como se muestra abajo. Tené en cuenta que la computadora te va a decir cómo te fue después de que terminen las " + numRounds + " rondas del juego.</div></div>" +
 	"<div class = cct-box2>"+
-	"<div class = titleBigBox>   <div class = titleboxLeft><div class = center-text id = game_round>Game Round: 1</div></div>   <div class = titleboxLeft1><div class = center-text id = loss_amount>Loss Amount: 250</div></div>    <div class = titleboxMiddle1><div class = center-text id = gain_amount>Gain Amount: 30</div></div>    <div class = titlebox><div class = center-text>How many cards do you want to take? </div></div>     <div class = titleboxRight1><div class = center-text id = num_loss_cards>Number of Loss Cards: 1</div></div>"+
-	"<div class = buttonbox><button type='button' id = nextButton class = 'CCT-btn select-button' onclick = clearTimers() disabled>Next Round</button></div>"+
+	"<div class = titleBigBox>   <div class = titleboxLeft><div class = center-text id = game_round>Ronda: 1</div></div>   <div class = titleboxLeft1><div class = center-text id = loss_amount>Monto de pérdida: 250</div></div>    <div class = titleboxMiddle1><div class = center-text id = gain_amount>Monto de ganancia: 30</div></div>    <div class = titlebox><div class = center-text>¿Cuántas cartas querés dar vuelta? </div></div>     <div class = titleboxRight1><div class = center-text id = num_loss_cards>Cantidad de cartas de pérdida: 1</div></div>"+
+	"<div class = buttonbox><button type='button' id = nextButton class = 'CCT-btn select-button' onclick = clearTimers() disabled>Siguiente ronda</button></div>"+
 	getButtons()+
 	"</div>"+
 	getBoard()
-	
+
 
 
 var practiceSetup2 =
- 	"<div class = practiceText><div class = block-text2 id = instruct2><strong>Practice 2: </strong> The computer will record your points for each round and will show you the total after you finish all " + numRounds + " rounds of the game.  This is the second practice round. Please again select as many cards as you would like to, given the number of loss cards and the amounts that you can win or lose if you turn over a gain or loss card, as shown below.</div></div>"+
+ 	"<div class = practiceText><div class = block-text2 id = instruct2><strong>Práctica 2: </strong> La computadora va a registrar tus puntos en cada ronda y te va a mostrar el total cuando termines las " + numRounds + " rondas del juego. Esta es la segunda ronda de práctica. Elegí nuevamente tantas cartas como quieras, según la cantidad de cartas de pérdida y los montos que podés ganar o perder al dar vuelta una carta de ganancia o de pérdida, como se muestra abajo.</div></div>"+
 	"<div class = cct-box2>"+
-	"<div class = titleBigBox>   <div class = titleboxLeft><div class = center-text id = game_round>Game Round: 2</div></div>   <div class = titleboxLeft1><div class = center-text id = loss_amount>Loss Amount: 750</div></div>    <div class = titleboxMiddle1><div class = center-text id = gain_amount>Gain Amount: 10</div></div>    <div class = titlebox><div class = center-text>How many cards do you want to take? </div></div>     <div class = titleboxRight1><div class = center-text id = num_loss_cards>Number of Loss Cards: 3</div></div>"+
-	"<div class = buttonbox><button type='button' id = nextButton class = 'CCT-btn select-button' onclick = clearTimers() disabled>Next Round</button></div>"+
+	"<div class = titleBigBox>   <div class = titleboxLeft><div class = center-text id = game_round>Ronda: 2</div></div>   <div class = titleboxLeft1><div class = center-text id = loss_amount>Monto de pérdida: 750</div></div>    <div class = titleboxMiddle1><div class = center-text id = gain_amount>Monto de ganancia: 10</div></div>    <div class = titlebox><div class = center-text>¿Cuántas cartas querés dar vuelta? </div></div>     <div class = titleboxRight1><div class = center-text id = num_loss_cards>Cantidad de cartas de pérdida: 3</div></div>"+
+	"<div class = buttonbox><button type='button' id = nextButton class = 'CCT-btn select-button' onclick = clearTimers() disabled>Siguiente ronda</button></div>"+
 	getButtons()+
 	"</div>"+
-	getBoard()	
-	
-	
+	getBoard()
+
+
 // this params array is organized such that the 0 index = the number of loss cards in round, the 1 index = the gain amount of each happy card, and the 2nd index = the loss amount when you turn over a sad face
 var paramsArray = [
 	[1, 10, 250],
@@ -333,11 +355,11 @@ var shuffledCardArray = jsPsych.randomization.repeat(cardArray, 1)
 var shuffledParamsArray = jsPsych.randomization.repeat(paramsArray, numRounds/8)
 
 
-var gameSetup = 
+var gameSetup =
 	"<div class = practiceText><div class = block-text2 id = feedback></div></div>" +
 	"<div class = cct-box2>"+
-	"<div class = titleBigBox>   <div class = titleboxLeft><div class = center-text id = game_round>Game Round: </div></div>   <div class = titleboxLeft1><div class = center-text id = loss_amount>Loss Amount: </div></div>    <div class = titleboxMiddle1><div class = center-text id = gain_amount>Gain Amount: </div></div>    <div class = titlebox><div class = center-text>How many cards do you want to take? </div></div>     <div class = titleboxRight1><div class = center-text id = num_loss_cards>Number of Loss Cards: </div></div>" +
-	"<div class = buttonbox><button type='button' id = nextButton class = 'CCT-btn select-button' onclick = clearTimers() disabled>Next Round</button></div>"+
+	"<div class = titleBigBox>   <div class = titleboxLeft><div class = center-text id = game_round>Ronda: </div></div>   <div class = titleboxLeft1><div class = center-text id = loss_amount>Monto de pérdida: </div></div>    <div class = titleboxMiddle1><div class = center-text id = gain_amount>Monto de ganancia: </div></div>    <div class = titlebox><div class = center-text>¿Cuántas cartas querés dar vuelta? </div></div>     <div class = titleboxRight1><div class = center-text id = num_loss_cards>Cantidad de cartas de pérdida: </div></div>" +
+	"<div class = buttonbox><button type='button' id = nextButton class = 'CCT-btn select-button' onclick = clearTimers() disabled>Siguiente ronda</button></div>"+
 	getButtons()+
 	"</div>"+
 	getBoard()
@@ -354,15 +376,15 @@ var post_task_block = {
    data: {
        trial_id: "post task questions"
    },
-   questions: ['<p class = center-block-text style = "font-size: 20px">Please summarize what you were asked to do in this task.</p>',
-              '<p class = center-block-text style = "font-size: 20px">Do you have any comments about this task?</p>'],
+   questions: ['<p class = center-block-text style = "font-size: 20px">Resumí con tus palabras qué se te pidió hacer en esta tarea.</p>',
+              '<p class = center-block-text style = "font-size: 20px">¿Tenés algún comentario sobre esta tarea?</p>'],
    rows: [15, 15],
    columns: [60,60]
 };
 
 /* define static blocks */
 var feedback_instruct_text =
-	'Welcome to the experiment. This task will take around 15 minutes. Press <strong>enter</strong> to begin.'
+	'Te damos la bienvenida al experimento. Esta tarea dura alrededor de 15 minutos. Presioná <strong>Enter</strong> para comenzar.'
 var feedback_instruct_block = {
 	type: 'poldrack-text',
 	cont_key: [13],
@@ -379,39 +401,39 @@ var instructions_block = {
   type: 'poldrack-instructions',
   data: {trial_id: 'instruction'},
   pages: [
-	'<div class = centerbox><p class = block-text><strong>Introduction and Explanation</strong>'+
-	'<p>-You are now going to participate in a card game.  In this game, you will turn over cards to win or lose points which are worth money.</p>'+
-	'<p>-In each game round, you will see 32 cards on the computer screen, face down. You will decide how many of these cards to turn over. Each card is either a gain card or a loss card (there are no neutral cards). You will know how many gain cards and loss cards are in the deck of 32, and how many points you will gain or lose if you turn over a gain or loss card. What you do not know is which of the 32 cards that you see face-down are gain cards and which are loss cards. </p>'+
-	'<p>-You indicate the number of cards (from 0 to 32) you want to turn over by clicking on a small button. You will not see the cards turned over, but the game will select a random set of cards equal to the number you chose and "turn them over" without you seeing. For each gain card turned over, points are added to your round total and another card is turned over. This continues until a loss card is uncovered or until the number of cards you chose to turn over is reached. The first time a loss card is turned over, the loss points will be subtracted from your current point total and the round is over – even if you indicated that more cards should be turned over. The accumulated total will be your number of points for that round, and you go on to the next round. Each new round starts with a score of 0 points; that means you play each round independently of the other rounds.</p>'+
-	'<p>-You will play a total of ' + numRounds + ' rounds, three of which will be randomly selected at the end of the session, and you will get a bonus payment proportional to those rounds.</p>',
-	
-    '<div class = centerbox><p class = block-text><strong>Unknown Cards:</strong>'+
-    '<p> This is what unknown cards looks like.  Turn it over by clicking on it.</p>'+
+	'<div class = centerbox><p class = block-text><strong>Introducción y explicación</strong>'+
+	'<p>-Ahora vas a participar en un juego de cartas. En este juego vas a dar vuelta cartas para ganar o perder puntos, que valen dinero.</p>'+
+	'<p>-En cada ronda del juego vas a ver 32 cartas en la pantalla de la computadora, boca abajo. Vas a decidir cuántas de esas cartas querés dar vuelta. Cada carta es una carta de ganancia o una carta de pérdida (no hay cartas neutras). Vas a saber cuántas cartas de ganancia y cuántas cartas de pérdida hay entre las 32, y cuántos puntos vas a ganar o perder si das vuelta una carta de ganancia o una carta de pérdida. Lo que no sabés es cuáles de las 32 cartas que ves boca abajo son de ganancia y cuáles son de pérdida. </p>'+
+	'<p>-Indicás la cantidad de cartas (de 0 a 32) que querés dar vuelta haciendo clic en un botón pequeño. No vas a ver las cartas dadas vuelta: el juego va a seleccionar un conjunto aleatorio de cartas, de la cantidad que elegiste, y las va a "dar vuelta" sin que lo veas. Por cada carta de ganancia que se da vuelta, se suman puntos al total de tu ronda y se da vuelta otra carta. Esto continúa hasta que aparece una carta de pérdida o hasta que se alcanza la cantidad de cartas que elegiste. La primera vez que se da vuelta una carta de pérdida, los puntos de pérdida se restan de tu total actual y la ronda termina, incluso si habías indicado que se dieran vuelta más cartas. El total acumulado será tu puntaje de esa ronda, y pasás a la siguiente. Cada ronda nueva empieza con 0 puntos; es decir, jugás cada ronda de forma independiente de las demás.</p>'+
+	'<p>-Vas a jugar un total de ' + numRounds + ' rondas, de las cuales tres se elegirán al azar al final de la sesión, y vas a recibir un pago adicional proporcional a esas rondas.</p>',
+
+    '<div class = centerbox><p class = block-text><strong>Cartas desconocidas:</strong>'+
+    '<p> Así se ve una carta desconocida. Dala vuelta haciendo clic sobre ella.</p>'+
     "<p><input type='image' id = '133' src='images/beforeChosen.png' onclick = instructButton(this.id)>"+
 	'</p></div>',
-	
+
 	'<div class = centerbox><p class = block-text>'+
-	'<p><strong>The Gain Card:</strong></p>'+
-	'<p>For every gain card you turn over, your score increases by either 10 or 30 points in different rounds.</p>'+
+	'<p><strong>La carta de ganancia:</strong></p>'+
+	'<p>Por cada carta de ganancia que des vuelta, tu puntaje aumenta 10 o 30 puntos, según la ronda.</p>'+
 	"<p><input type='image' src='images/chosen.png'>"+
-	'<p><strong>The Loss Card:</strong></p>'+
+	'<p><strong>La carta de pérdida:</strong></p>'+
 	"<p><input type='image' src='images/loss.png'></p>"+
-	'<p>For every loss card you turn over, your score decreases by either 250 or 750 points in different rounds. Furthermore, the round immediately ends (you cannot turn over any more cards). There will be either 1 or 3 loss cards in any given round.</p>'+
-	'<p>The number of loss cards and the value of points that can be won or lost by turning over a gain or loss card are fixed in each round. This information will always be on display so you know what kind of round you are in.</p>'+
+	'<p>Por cada carta de pérdida que des vuelta, tu puntaje disminuye 250 o 750 puntos, según la ronda. Además, la ronda termina de inmediato (no podés dar vuelta más cartas). En cada ronda habrá 1 o 3 cartas de pérdida.</p>'+
+	'<p>La cantidad de cartas de pérdida y la cantidad de puntos que se pueden ganar o perder al dar vuelta una carta de ganancia o una carta de pérdida son fijas en cada ronda. Esta información va a estar siempre a la vista, para que sepas en qué tipo de ronda estás.</p>'+
 	'</p></div>',
-	
-	"<div class = practiceText><div class = block-text2 id = instruct1><strong>Example 1: </strong>In the example below, you see 32 unknown cards. The display shows you that 1 of these cards is a loss card. It also tells you that turning over each gain card is worth 10 points to you, and that turning over the loss card will cost you 750 points. Let us suppose you decided to turn over 7 cards and then decided to stop. Please click the 'See Result' button to see what happens:</div></div>"+
+
+	"<div class = practiceText><div class = block-text2 id = instruct1><strong>Ejemplo 1: </strong>En el ejemplo de abajo ves 32 cartas desconocidas. El panel te indica que 1 de esas cartas es una carta de pérdida. También te indica que dar vuelta cada carta de ganancia vale 10 puntos para vos, y que dar vuelta la carta de pérdida te costará 750 puntos. Supongamos que decidiste dar vuelta 7 cartas y después decidiste parar. Hacé clic en el botón 'Ver resultado' para ver qué pasa:</div></div>"+
 	"<div class = cct-box2>"+
-	"<div class = titleBigBox>   <div class = titleboxLeft><div class = center-text>Game Round: 1</div></div>   <div class = titleboxLeft1><div class = center-text>Loss Amount: 750</div></div>    <div class = titleboxMiddle1><div class = center-text>Gain Amount: 10</div></div>    <div class = titlebox><div class = center-text>How many cards do you want to take? </div></div>     <div class = titleboxRight1><div class = center-text>Number of Loss Cards: 1</div></div>   <div class = titleboxRight><div class = center-text id = current_round>Current Round Points: 0</div></div>"+
-	"<div class = buttonbox><button type='button' class = CCT-btn id = instructButton onclick= instructFunction()>See Result</button></div></div>"+
+	"<div class = titleBigBox>   <div class = titleboxLeft><div class = center-text>Ronda: 1</div></div>   <div class = titleboxLeft1><div class = center-text>Monto de pérdida: 750</div></div>    <div class = titleboxMiddle1><div class = center-text>Monto de ganancia: 10</div></div>    <div class = titlebox><div class = center-text>¿Cuántas cartas querés dar vuelta? </div></div>     <div class = titleboxRight1><div class = center-text>Cantidad de cartas de pérdida: 1</div></div>   <div class = titleboxRight><div class = center-text id = current_round>Puntos de la ronda actual: 0</div></div>"+
+	"<div class = buttonbox><button type='button' class = CCT-btn id = instructButton onclick= instructFunction()>Ver resultado</button></div></div>"+
 	getBoard(2),
-	
-	"<div class = practiceText><div class = block-text2 id = instruct2><strong>Example 2: </strong>In the example below, you see 32 unknown cards. The display shows you that 3 of these cards are loss cards. It also tells you that turning over each gain card is worth 30 points to you, and that turning over the loss card will cost you 250 points. Let us suppose you decided to turn over 10 cards and then decided to stop. Please click the 'See Result' button to see what happens:</div></div>"+
+
+	"<div class = practiceText><div class = block-text2 id = instruct2><strong>Ejemplo 2: </strong>En el ejemplo de abajo ves 32 cartas desconocidas. El panel te indica que 3 de esas cartas son cartas de pérdida. También te indica que dar vuelta cada carta de ganancia vale 30 puntos para vos, y que dar vuelta la carta de pérdida te costará 250 puntos. Supongamos que decidiste dar vuelta 10 cartas y después decidiste parar. Hacé clic en el botón 'Ver resultado' para ver qué pasa:</div></div>"+
 	"<div class = cct-box2>"+
-	"<div class = titleBigBox>   <div class = titleboxLeft><div class = center-text>Game Round: 1</div></div>   <div class = titleboxLeft1><div class = center-text>Loss Amount: 250</div></div>    <div class = titleboxMiddle1><div class = center-text>Gain Amount: 30</div></div>    <div class = titlebox><div class = center-text>How many cards do you want to take? </div></div>     <div class = titleboxRight1><div class = center-text>Number of Loss Cards: 3</div></div>   <div class = titleboxRight><div class = center-text id = current_round>Current Round Points: 0</div></div>"+
-	"<div class = buttonbox><button type='button' class = CCT-btn id = instructButton onclick= instructFunction2()>See Result</button></div></div>"+
+	"<div class = titleBigBox>   <div class = titleboxLeft><div class = center-text>Ronda: 1</div></div>   <div class = titleboxLeft1><div class = center-text>Monto de pérdida: 250</div></div>    <div class = titleboxMiddle1><div class = center-text>Monto de ganancia: 30</div></div>    <div class = titlebox><div class = center-text>¿Cuántas cartas querés dar vuelta? </div></div>     <div class = titleboxRight1><div class = center-text>Cantidad de cartas de pérdida: 3</div></div>   <div class = titleboxRight><div class = center-text id = current_round>Puntos de la ronda actual: 0</div></div>"+
+	"<div class = buttonbox><button type='button' class = CCT-btn id = instructButton onclick= instructFunction2()>Ver resultado</button></div></div>"+
 	getBoard(2),
-	"<div class = centerbox><p class = block-text>Unlike those examples, in the version of the card game you are about to play, you will not turn the cards over one by one.  Rather, you will simply choose the total number of cards you would like to turn over (from 0 to 32) and then continue to the next round. We will complete two practice rounds to make sure this is clear. Before proceeding, please make sure you understand the examples on the last two pages.</p></div>"
+	"<div class = centerbox><p class = block-text>A diferencia de esos ejemplos, en la versión del juego de cartas que vas a jugar no vas a dar vuelta las cartas de a una. En cambio, simplemente vas a elegir la cantidad total de cartas que querés dar vuelta (de 0 a 32) y después pasar a la siguiente ronda. Vamos a hacer dos rondas de práctica para asegurarnos de que esto quede claro. Antes de continuar, asegurate de haber entendido los ejemplos de las dos últimas páginas.</p></div>"
   ],
   allow_keys: false,
   show_clickable_nav: true,
@@ -432,10 +454,10 @@ var instruction_node = {
 		}
 		if (sumInstructTime <= instructTimeThresh * 1000) {
 			feedback_instruct_text =
-				'Read through instructions too quickly.  Please take your time and make sure you understand the instructions.  Press <strong>enter</strong> to continue.'
+				'Leíste las instrucciones demasiado rápido. Tomate tu tiempo y asegurate de haberlas entendido. Presioná <strong>Enter</strong> para continuar.'
 			return true
 		} else if (sumInstructTime > instructTimeThresh * 1000) {
-			feedback_instruct_text = 'Done with instructions. Press <strong>enter</strong> to continue.'
+			feedback_instruct_text = 'Terminaste con las instrucciones. Presioná <strong>Enter</strong> para continuar.'
 			return false
 		}
 	}
@@ -443,7 +465,7 @@ var instruction_node = {
 
 var end_instructions = {
 	type: 'poldrack-single-stim',
-	stimulus: '<div class = centerbox><p class = center-block-text><strong>End of Instructions </strong></p><p class = center-block-text>Press <strong>enter</strong> when you are ready to play the game.</p></div>',
+	stimulus: '<div class = centerbox><p class = center-block-text><strong>Fin de las instrucciones </strong></p><p class = center-block-text>Presioná <strong>Enter</strong> cuando quieras empezar a jugar.</p></div>',
 	is_html: true,
 	data: {
 		trial_id: 'end_instructions'
@@ -459,7 +481,7 @@ var end_block = {
 		trial_id: 'end',
 		exp_id: 'columbia_card_task_cold'
 	},
-	text: '<div class = centerbox><p class = center-block-text>Finished with this task.</p><p class = center-block-text>Press <strong>enter</strong> to continue.</p></div>',
+	text: '<div class = centerbox><p class = center-block-text>Terminaste esta tarea.</p><p class = center-block-text>Presioná <strong>Enter</strong> para continuar.</p></div>',
 	cont_key: [13],
 	timing_post_trial: 0,
   	on_finish: assessPerformance
